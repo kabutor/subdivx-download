@@ -27,7 +27,7 @@ def extract_meta_data(filename):
         try:
             match = [option for option in options if option in f][0]
         except IndexError:
-            match = None
+            match = ''
         return match
     quality = _match(_qualities)
     group = _match(_groups)
@@ -61,7 +61,7 @@ def main():
             series_name = info.seriesname
             series_id = 's%02de%s' % (info.seasonnumber, '-'.join(['%02d' % e for e in info.episodenumbers]))
             quality, group, codec = extract_meta_data(filename)
-            url = lib.get_subtitle_url(series_name, series_id, group)
+            url = lib.get_subtitle_url(series_name, series_id, group or quality or codec)
         except lib.NoResultsError, e:
             lib.logger.error(e.message)
             raise
