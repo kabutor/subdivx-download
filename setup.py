@@ -11,7 +11,7 @@ long_description = open('README.rst').read()
 
 setup(
     name = 'subdivx-download',
-    version = '0.2',
+    version = '0.2.1',
     description = 'A program to retrieve the best matching subtitle from subdivx.com',
     long_description = long_description,
     author = u'Michel Peterson. Modified by Martin Gaitan',
