@@ -16,7 +16,7 @@ setup(
     long_description = long_description,
     author = u'Michel Peterson. Modified by Martin Gaitan',
     author_email = 'michel@peterson.com.ar',
-    url='https://github.com/mpeterson/subdivx.com-subtitle-retriever',
+    url='https://github.com/nqnwebs/subdivx.com-subtitle-retriever',
     packages = ['subdivx_download',],
     license = 'GNU GENERAL PUBLIC LICENCE v3.0',
     install_requires = ['BeautifulSoup', 'tvnamer'],
