@@ -1,19 +1,40 @@
-A program to retrieve the best matching subtitle (in spanish) for a show episode from subdivx.com
-Could be used in flexget_ through the plugin exec.  
+A fork of Michel Peterson's subdivx.com-subtitle-retriever
+Retrieve the best matching subtitle (in spanish) for a show episode from subdivx.com
+
+This fork simplify the way to use a stand-alone program, allowing
+give a path (a filename or directory) as unique parameter.
+
+Also added this features:
+
+- Unpack rared subtitles beside zipped onws
+- Better matching: look for *group* mention in subtitle description
+- Rename subtitles after unpack it
+- packaged: setup.py pip installable and splitted in modules
+
+
+Install
+-------
+
+You can install it using pip::
+
+    $ sudo pip install git+git://github.com/nqnwebs/h2dp
 
 
 Usage
 -----
 
-usage: subdivx-download [-h] [--quiet] path series_name series_id series_quality
+usage: subdivx-download [-h] [--quiet] path
 
 positional arguments:
-  path            The series episode identifier to be downloaded
-  series_name     The name of the series subs to be downloaded
-  series_id       The series episode identifier to be downloaded
-  series_quality  The series episode quality to be downloaded
+  path         file or directory to retrieve subtitles
 
 optional arguments:
-  -h, --help      show this help message and exit
+  -h, --help   show this help message and exit
   --quiet, -q
+
+
+.. tip::
+
+    Run ``subdivx-download`` before ``tvnamer`` to give more metadata
+    in your subtitle seach
 

@@ -5,6 +5,8 @@ import re
 import logging
 import argparse
 import logging.handlers
+from contextlib import contextmanager
+
 from tvnamer.utils import FileParser, FileFinder
 import subdivxlib as lib
 
@@ -34,10 +36,23 @@ def extract_meta_data(filename):
     codec = _match(_codecs)
     return quality, group, codec
 
-
+@contextmanager
+def subtitle_renamer(filepath):
+    """dectect new subtitles files in a directory and rename with
+       filepath basename"""
+    dirpath = os.path.dirname(filepath)
+    filename = os.path.basename(filepath)
+    before = set(os.listdir(dirpath))
+    yield
+    after = set(os.listdir(dirpath))
+    for new_file in after - before:
+        if not (new_file.endswith('srt') or new_file.endswith('SRT')):
+            continue
+        os.rename(new_file, filename[:-3] + 'srt')
+    
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('path', type=str, help="file(s) to retrieve subtitles")
+    parser.add_argument('path', type=str, help="file or directory to retrieve subtitles")
     parser.add_argument('--quiet', '-q', action='store_true')
 
     args = parser.parse_args()
@@ -55,7 +70,9 @@ def main():
         # skip if a subtitle for this file exists
         if os.path.exists(filepath[:-3] + 'srt'):
             continue
+        
         filename = os.path.basename(filepath)
+        
         try:
             info = FileParser(filename).parse()
             series_name = info.seriesname
@@ -66,7 +83,10 @@ def main():
             lib.logger.error(e.message)
             raise
 
-        lib.get_subtitle(url, args.path[:-3] + 'srt' )
+        with subtitle_renamer(filepath):
+            lib.get_subtitle(url, 'temp__' + filename )
+        
+        
 
 
 if __name__ == '__main__':
