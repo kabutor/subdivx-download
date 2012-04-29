@@ -22,11 +22,11 @@ def main():
     if not args.quiet:
         console = logging.StreamHandler()
         console.setFormatter(lib.LOGGER_FORMATTER)
-        logger.addHandler(console)
+        lib.logger.addHandler(console)
     try:
         url = lib.get_subtitle_url(args.series_name, args.series_id, args.series_quality)
     except lib.NoResultsError, e:
-        logger.error(e.message)
+        lib.logger.error(e.message)
         raise
 
     out_file_name = '/%s %s %s' % (args.series_name, args.series_id, args.series_quality)

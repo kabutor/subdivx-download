@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import subdivx_download.retriever as cli
+import subdivx_download.smarter as cli
 
 if __name__ == '__main__':
     cli.main()

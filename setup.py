@@ -19,7 +19,7 @@ setup(
     url='https://github.com/mpeterson/subdivx.com-subtitle-retriever',
     packages = ['subdivx_download',],
     license = 'GNU GENERAL PUBLIC LICENCE v3.0',
-    install_requires = ['BeautifulSoup',],
+    install_requires = ['BeautifulSoup', 'tvnamer'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
