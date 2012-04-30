@@ -6,11 +6,11 @@ give a path (a filename or directory) as unique parameter.
 
 Also added this features:
 
-- Unpack rared subtitles beside zipped onws
+- Unpack rared subtitles beside zipped ones
 - Better matching: look for *group* mention in subtitle description
 - Rename subtitles after unpack it
-- packaged: setup.py pip installable and splitted in modules
-
+- Packaging. pip installable ``setup.py`` and code modularized
+- Can retrieve subtitles for a partially downloaded files (``*.part``, ``*.temp``, ``*.tmp``)
 
 Install
 -------
