@@ -40,6 +40,13 @@ def extract_meta_data(filename):
 def subtitle_renamer(filepath):
     """dectect new subtitles files in a directory and rename with
        filepath basename"""
+
+    def extract_name(filepath):
+        filename, fileext = os.path.splitext(filepath)
+        if fileext in ('.part', '.temp', '.tmp'):
+            filename, fileext = os.path.splitext(filename)
+        return filename
+            
     dirpath = os.path.dirname(filepath)
     filename = os.path.basename(filepath)
     before = set(os.listdir(dirpath))
@@ -47,8 +54,11 @@ def subtitle_renamer(filepath):
     after = set(os.listdir(dirpath))
     for new_file in after - before:
         if not (new_file.endswith('srt') or new_file.endswith('SRT')):
+            # only apply to subtitles
             continue
-        os.rename(new_file, filename[:-3] + 'srt')
+
+        filename = extract_name(filepath)
+        os.rename(new_file, filename + '.srt')
     
 def main():
     parser = argparse.ArgumentParser()
@@ -64,11 +74,15 @@ def main():
         console.setFormatter(lib.LOGGER_FORMATTER)
         lib.logger.addHandler(console)
 
-    cursor = FileFinder(args.path, with_extension=['avi','mkv','mp4','mpg','m4v','ogv'])
+    cursor = FileFinder(args.path, with_extension=['avi','mkv','mp4',
+                                                   'mpg','m4v','ogv',
+                                                   'vob', '3gp',
+                                                   'part', 'temp', 'tmp'
+                                                   ])
     
     for filepath in cursor.findFiles():
         # skip if a subtitle for this file exists
-        if os.path.exists(filepath[:-3] + 'srt'):
+        if os.path.exists(os.path.splitext(filepath)[0] + '.srt'):
             continue
         
         filename = os.path.basename(filepath)
@@ -85,8 +99,6 @@ def main():
 
         with subtitle_renamer(filepath):
             lib.get_subtitle(url, 'temp__' + filename )
-        
-        
 
 
 if __name__ == '__main__':
