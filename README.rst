@@ -17,7 +17,7 @@ Install
 
 You can install it using pip::
 
-    $ sudo pip install git+git://github.com/nqnwebs/h2dp
+    $ sudo pip install git+git://github.com/nqnwebs/subdivx.com-subtitle-retriever.git
 
 
 Usage
