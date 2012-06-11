@@ -38,7 +38,7 @@ def setup_logger(level):
     logger.addHandler(logfile)
     logger.setLevel(level)
 
-def get_subtitle_url(series_name, series_id, series_quality):
+def get_subtitle_url(series_name, series_id, series_quality, skip=0):
     enc_series_name = urllib.quote(series_name)
     enc_series_id = urllib.quote(series_id)
 
@@ -72,10 +72,12 @@ def get_subtitle_url(series_name, series_id, series_quality):
 
             m2 = SequenceMatcher(None, search_match, long_substr)
             r = m2.ratio()
-            if r > .995: return 100
-            else: scores.append(r)
-
-        return int(100 * max(scores))
+            if r > .999:
+                return 100
+            else:
+                scores.append(r)
+        result = int(100 * sorted(scores, reverse=True)[skip:][0])
+        return result
 
     best_match = [calculate_ratio(''.join([e for e in description.recursiveChildGenerator() if isinstance(e,unicode)]))
                   for description in results_descriptions]

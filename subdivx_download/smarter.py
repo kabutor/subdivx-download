@@ -20,7 +20,7 @@ _qualities = ('1080i', '1080p', '1080p1080', '10bit', '1280x720',
                'web', 'web-dl', 'web-dlwebdl', 'webrip', 'workprint')
 _groups = ('2hd', 'asap', 'axxo', 'crimson', 'ctu', 'dimension', 'ebp',
            'fanta', 'fov', 'fqm', 'ftv', 'immerse', 'loki', 'lol',
-           'notv', 'sfm', 'sparks')
+           'notv', 'sfm', 'sparks', 'compulsion', 'ctrlhd')
 _codecs = ('xvid', 'x264')
 
 def extract_meta_data(filename):
@@ -62,11 +62,13 @@ def subtitle_renamer(filepath):
     
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('path', type=str, help="file or directory to retrieve subtitles")
+    parser.add_argument('path', type=str,
+                        help="file or directory to retrieve subtitles")
     parser.add_argument('--quiet', '-q', action='store_true')
+    parser.add_argument('--skip', '-s', type=int,
+                        default=0, help="skip from head")
 
     args = parser.parse_args()
-
     lib.setup_logger(lib.LOGGER_LEVEL)
 
     if not args.quiet:
@@ -92,7 +94,9 @@ def main():
             series_name = info.seriesname
             series_id = 's%02de%s' % (info.seasonnumber, '-'.join(['%02d' % e for e in info.episodenumbers]))
             quality, group, codec = extract_meta_data(filename)
-            url = lib.get_subtitle_url(series_name, series_id, group or quality or codec)
+            url = lib.get_subtitle_url(series_name, series_id,
+                                       group or quality or codec,
+                                       args.skip)
         except lib.NoResultsError, e:
             lib.logger.error(e.message)
             raise
