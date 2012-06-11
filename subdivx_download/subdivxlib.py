@@ -31,7 +31,7 @@ def is_rarfile(fn):
 def setup_logger(level):
     global logger
 
-    logger = logging.getLogger(__file__[:-3])
+    logger = logging.getLogger()
 
     logfile = logging.handlers.RotatingFileHandler(logger.name+'.log', maxBytes=1000 * 1024, backupCount=9)
     logfile.setFormatter(LOGGER_FORMATTER)
