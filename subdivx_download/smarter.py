@@ -17,10 +17,10 @@ _qualities = ('1080i', '1080p', '1080p1080', '10bit', '1280x720',
                'blurayrip', 'cam', 'dl', 'dsrdsrip', 'dvb', 'dvdrip',
                'dvdripdvd', 'dvdscr', 'hdtv', 'hr', 'ppvrip',
                'preair', 'r5', 'rc', 'sdtvpdtv', 'tc', 'tvrip',
-               'web', 'web-dl', 'web-dlwebdl', 'webrip', 'workprint')
+               'web', 'web-dl', 'WEB-DL', 'web-dlwebdl', 'webrip', 'workprint')
 _groups = ('2hd', 'asap', 'axxo', 'crimson', 'ctu', 'dimension', 'ebp',
            'fanta', 'fov', 'fqm', 'ftv', 'immerse', 'loki', 'lol',
-           'notv', 'sfm', 'sparks', 'compulsion', 'ctrlhd')
+           'notv', 'sfm', 'sparks', 'compulsion', 'ctrlhd', 'CtrlHD')
 _codecs = ('xvid', 'x264')
 
 def extract_meta_data(filename):
