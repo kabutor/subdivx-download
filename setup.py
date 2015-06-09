@@ -11,7 +11,7 @@ long_description = open('README.rst').read()
 
 setup(
     name = 'subdivx-download',
-    version = '0.2.3',
+    version = '0.3',
     description = 'A program to retrieve the best matching subtitle from subdivx.com',
     long_description = long_description,
     author = u"Martin Gaitan, based on a Michel Peterson's work",
@@ -31,5 +31,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
       ],
     scripts = ['bin/subdivx-download'],
-    
+
 )

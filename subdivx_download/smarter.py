@@ -1,7 +1,6 @@
 #!/bin/env python
 
 import os
-import re
 import logging
 import argparse
 import logging.handlers
@@ -46,7 +45,7 @@ def subtitle_renamer(filepath):
         if fileext in ('.part', '.temp', '.tmp'):
             filename, fileext = os.path.splitext(filename)
         return filename
-            
+
     dirpath = os.path.dirname(filepath)
     filename = os.path.basename(filepath)
     before = set(os.listdir(dirpath))
@@ -59,7 +58,7 @@ def subtitle_renamer(filepath):
 
         filename = extract_name(filepath)
         os.rename(new_file, filename + '.srt')
-    
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str,
@@ -67,7 +66,8 @@ def main():
     parser.add_argument('--quiet', '-q', action='store_true')
     parser.add_argument('--skip', '-s', type=int,
                         default=0, help="skip from head")
-
+    parser.add_argument('--force', '-f', action='store_true',
+                        default=False, help="override existing file")
     args = parser.parse_args()
     lib.setup_logger(lib.LOGGER_LEVEL)
 
@@ -81,14 +81,18 @@ def main():
                                                    'vob', '3gp',
                                                    'part', 'temp', 'tmp'
                                                    ])
-    
+
     for filepath in cursor.findFiles():
         # skip if a subtitle for this file exists
-        if os.path.exists(os.path.splitext(filepath)[0] + '.srt'):
-            continue
-        
+        sub_file = os.path.splitext(filepath)[0] + '.srt'
+        if os.path.exists(sub_file):
+            if args.force:
+              os.remove(sub_file)
+            else:
+              continue
+
         filename = os.path.basename(filepath)
-        
+
         try:
             info = FileParser(filename).parse()
             series_name = info.seriesname
