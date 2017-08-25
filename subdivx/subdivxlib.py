@@ -28,6 +28,7 @@ def is_rarfile(fn):
     buf = open(fn, "rb").read(len(RAR_ID))
     return buf == RAR_ID
 
+
 def setup_logger(level):
     global logger
 
@@ -37,6 +38,7 @@ def setup_logger(level):
     logfile.setFormatter(LOGGER_FORMATTER)
     logger.addHandler(logfile)
     logger.setLevel(level)
+
 
 def get_subtitle_url(series_name, series_id, series_quality, skip=0):
     enc_series_name = urllib.quote(series_name)
@@ -103,6 +105,7 @@ def get_subtitle(url, path):
                 zip_file.extract(name, os.path.dirname(path))
 
         zip_file.close()
+
     elif is_rarfile(temp_file.name):
         rar_path = path + '.rar'
         logger.info('Saving rared subtitle as %s' % rar_path)
