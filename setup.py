@@ -15,9 +15,9 @@ setup(
     url='https://github.com/mgaitan/subdivx-download',
     packages=['subdivx',],
     license='GNU GENERAL PUBLIC LICENCE v3.0',
-    install_requires=['BeautifulSoup', 'tvnamer'],
+    install_requires=['beautifulsoup4', 'tvnamer'],
     entry_points={
-        'console_scripts': ['subdivx-download=subdivx.smarter:main'],
+        'console_scripts': ['subdivx=subdivx.cli:main'],
     },
     classifiers=[
         'Development Status :: 4 - Beta',

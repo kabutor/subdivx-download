@@ -1,19 +1,19 @@
-import argparse
+import requests
 import logging
 import logging.handlers
 import os
-import urllib
-import urllib2
+import urllib.parse
+from itertools import chain
 
 from difflib import SequenceMatcher
 from tempfile import NamedTemporaryFile
 from zipfile import is_zipfile, ZipFile
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
-RAR_ID = bytes("Rar!\x1a\x07\x00")
+RAR_ID = b"Rar!\x1a\x07\x00"
 
-SUBDIVX_SEARCH_URL = "http://www.subdivx.com/index.php?buscar=%s+%s&accion=5&masdesc=&subtitulos=1&realiza_b=1&oxdown=1"
+SUBDIVX_SEARCH_URL = "https://www.subdivx.com/index.php?buscar=%s+%s&accion=5&masdesc=&subtitulos=1&realiza_b=1&oxdown=1"
 SUBDIVX_DOWNLOAD_MATCHER = {'name':'a', 'rel':"nofollow", 'target': "new"}
 
 LOGGER_LEVEL = logging.DEBUG
@@ -40,26 +40,34 @@ def setup_logger(level):
     logger.setLevel(level)
 
 
-def get_subtitle_url(series_name, series_id, series_quality, skip=0):
-    enc_series_name = urllib.quote(series_name)
-    enc_series_id = urllib.quote(series_id)
+def get_subtitle_url(series_name, series_id, metadata, skip=0):
+    enc_series_name = urllib.parse.quote(series_name)
+    enc_series_id = urllib.parse.quote(series_id)
 
     logger.debug('Starting request to subdivx.com')
-    page = urllib2.urlopen(SUBDIVX_SEARCH_URL % (enc_series_name, enc_series_id))
-    logger.debug('Search Query URL: ' + page.geturl())
+    url = SUBDIVX_SEARCH_URL % (enc_series_name, enc_series_id)
+    page = requests.get(url).text
+    logger.debug('Search Query URL: ' + url)
+    soup = BeautifulSoup(page, 'html5lib')
+    titles = soup('div', id='menu_detalle_buscador')
 
-    soup = BeautifulSoup(page)
+    # only include results for this specific serie / episode
+    # ie. search terms are in the title of the result item
+    descriptions = [
+        title.nextSibling(id='buscador_detalle_sub')[0] for title in titles
+        if series_name in title.text.lower() and series_id in title.text.lower()
+    ]
 
-    results_descriptions = soup('div', id='buscador_detalle_sub')
 
-    if not results_descriptions:
+    if not descriptions:
         raise(NoResultsError(' '.join(['No suitable subtitles were found for:',
                                       series_name,
-                                      series_id,
-                                      series_quality])))
-
-    search_match = '%s %s %s' % (series_name, series_id, series_quality)
-    matcher = SequenceMatcher(lambda x: x==" " or x==".", search_match)
+                                      series_id]))
+        )
+    # then find the best result looking for metadata keywords in the description
+    search_match = ' '.join(chain.from_iterable(metadata))
+    matcher = SequenceMatcher(lambda x: x == " " or x == ".", search_match)
+    print(metadata)
 
     def calculate_ratio(seq):
         matcher.set_seq2(seq)
@@ -68,9 +76,9 @@ def get_subtitle_url(series_name, series_id, series_quality, skip=0):
 
         scores = []
         for block in blocks:
-            long_start   = block[1] - block[0]
-            long_end     = long_start + len(search_match)
-            long_substr  = seq[long_start:long_end]
+            long_start = block[1] - block[0]
+            long_end = long_start + len(search_match)
+            long_substr = seq[long_start:long_end]
 
             m2 = SequenceMatcher(None, search_match, long_substr)
             r = m2.ratio()
@@ -81,19 +89,19 @@ def get_subtitle_url(series_name, series_id, series_quality, skip=0):
         result = int(100 * sorted(scores, reverse=True)[skip:][0])
         return result
 
-    best_match = [calculate_ratio(''.join([e for e in description.recursiveChildGenerator() if isinstance(e,unicode)]))
-                  for description in results_descriptions]
-
+    best_match = [
+        calculate_ratio(''.join(
+            [e for e in description.recursiveChildGenerator() if isinstance(e, str)]
+        )) for description in descriptions
+    ]
     best_match_index = best_match.index(max(best_match))
+    print(descriptions[best_match_index].text)
+    return descriptions[best_match_index].nextSibling.find(**SUBDIVX_DOWNLOAD_MATCHER)['href']
 
-    return results_descriptions[best_match_index].nextSibling.find(**SUBDIVX_DOWNLOAD_MATCHER)['href']
 
 def get_subtitle(url, path):
-    in_data = urllib2.urlopen(url)
     temp_file = NamedTemporaryFile()
-
-    temp_file.write(in_data.read())
-    in_data.close()
+    temp_file.write(requests.get(url).content)
     temp_file.seek(0)
 
     if is_zipfile(temp_file.name):
@@ -109,7 +117,7 @@ def get_subtitle(url, path):
     elif is_rarfile(temp_file.name):
         rar_path = path + '.rar'
         logger.info('Saving rared subtitle as %s' % rar_path)
-        with open(rar_path, 'w') as out_file:
+        with open(rar_path, 'wb') as out_file:
             out_file.write(temp_file.read())
 
         try:

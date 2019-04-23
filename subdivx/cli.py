@@ -3,11 +3,19 @@
 import os
 import logging
 import argparse
+from collections import namedtuple
 import logging.handlers
 from contextlib import contextmanager
 
 from tvnamer.utils import FileParser, FileFinder
-import subdivxlib as lib
+from . import lib
+
+_extensions = [
+    'avi', 'mkv', 'mp4',
+    'mpg', 'm4v', 'ogv',
+    'vob', '3gp',
+    'part', 'temp', 'tmp'
+]
 
 #obtained from http://flexget.com/wiki/Plugins/quality
 _qualities = ('1080i', '1080p', '1080p1080', '10bit', '1280x720',
@@ -16,24 +24,58 @@ _qualities = ('1080i', '1080p', '1080p1080', '10bit', '1280x720',
                'blurayrip', 'cam', 'dl', 'dsrdsrip', 'dvb', 'dvdrip',
                'dvdripdvd', 'dvdscr', 'hdtv', 'hr', 'ppvrip',
                'preair', 'r5', 'rc', 'sdtvpdtv', 'tc', 'tvrip',
-               'web', 'web-dl', 'WEB-DL', 'web-dlwebdl', 'webrip', 'workprint')
-_groups = ('2hd', 'asap', 'axxo', 'crimson', 'ctu', 'dimension', 'ebp',
-           'fanta', 'fov', 'fqm', 'ftv', 'immerse', 'loki', 'lol',
-           'notv', 'sfm', 'sparks', 'compulsion', 'ctrlhd', 'CtrlHD')
-_codecs = ('xvid', 'x264')
+               'web', 'web-dl', 'web-dlwebdl', 'webrip', 'workprint')
+_keywords = (
+    '2hd',
+    'adrenaline',
+    'amnz',
+    'asap',
+    'axxo',
+    'compulsion',
+    'crimson',
+    'ctrlhd',
+    'ctrlhd',
+    'ctu',
+    'dimension',
+    'ebp',
+    'ettv',
+    'eztv',
+    'fanta',
+    'fov',
+    'fqm',
+    'ftv',
+    'immerse',
+    'internal',
+    'ion10',
+    'loki',
+    'lol',
+    'mement',
+    'memento',
+    'notv',
+    'sfm',
+    'sparks',
+    'turbo'
+)
+
+_codecs = ('xvid', 'x264', 'h264', 'x265')
+
+
+Metadata = namedtuple('Metadata', 'keywords quality codec')
+
 
 def extract_meta_data(filename):
     f = filename.lower()[:-4]
     def _match(options):
         try:
-            match = [option for option in options if option in f][0]
+            matches = [option for option in options if option in f]
         except IndexError:
-            match = ''
-        return match
+            matches = []
+        return matches
+    keywords = _match(_keywords)
     quality = _match(_qualities)
-    group = _match(_groups)
     codec = _match(_codecs)
-    return quality, group, codec
+    return Metadata(keywords, quality, codec)
+
 
 @contextmanager
 def subtitle_renamer(filepath):
@@ -52,12 +94,12 @@ def subtitle_renamer(filepath):
     yield
     after = set(os.listdir(dirpath))
     for new_file in after - before:
-        if not (new_file.endswith('srt') or new_file.endswith('SRT')):
+        if not new_file.lower().endswith('srt'):
             # only apply to subtitles
             continue
-
         filename = extract_name(filepath)
         os.rename(new_file, filename + '.srt')
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -76,20 +118,16 @@ def main():
         console.setFormatter(lib.LOGGER_FORMATTER)
         lib.logger.addHandler(console)
 
-    cursor = FileFinder(args.path, with_extension=['avi','mkv','mp4',
-                                                   'mpg','m4v','ogv',
-                                                   'vob', '3gp',
-                                                   'part', 'temp', 'tmp'
-                                                   ])
+    cursor = FileFinder(args.path, with_extension=_extensions)
 
     for filepath in cursor.findFiles():
         # skip if a subtitle for this file exists
         sub_file = os.path.splitext(filepath)[0] + '.srt'
         if os.path.exists(sub_file):
             if args.force:
-              os.remove(sub_file)
+                os.remove(sub_file)
             else:
-              continue
+                continue
 
         filename = os.path.basename(filepath)
 
@@ -97,11 +135,12 @@ def main():
             info = FileParser(filename).parse()
             series_name = info.seriesname
             series_id = 's%02de%s' % (info.seasonnumber, '-'.join(['%02d' % e for e in info.episodenumbers]))
-            quality, group, codec = extract_meta_data(filename)
-            url = lib.get_subtitle_url(series_name, series_id,
-                                       group or quality or codec,
-                                       args.skip)
-        except lib.NoResultsError, e:
+            metadata = extract_meta_data(filename)
+            url = lib.get_subtitle_url(
+                series_name, series_id,
+                metadata,
+                args.skip)
+        except lib.NoResultsError as e:
             lib.logger.error(e.message)
             raise
 
