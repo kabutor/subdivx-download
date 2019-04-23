@@ -50,7 +50,6 @@ _keywords = (
     'loki',
     'lol',
     'mement',
-    'memento',
     'notv',
     'sfm',
     'sparks',

@@ -3,9 +3,7 @@ import logging
 import logging.handlers
 import os
 import urllib.parse
-from itertools import chain
 
-from difflib import SequenceMatcher
 from tempfile import NamedTemporaryFile
 from zipfile import is_zipfile, ZipFile
 
@@ -58,45 +56,31 @@ def get_subtitle_url(series_name, series_id, metadata, skip=0):
         if series_name in title.text.lower() and series_id in title.text.lower()
     ]
 
-
     if not descriptions:
         raise(NoResultsError(' '.join(['No suitable subtitles were found for:',
                                       series_name,
                                       series_id]))
         )
     # then find the best result looking for metadata keywords in the description
-    search_match = ' '.join(chain.from_iterable(metadata))
-    matcher = SequenceMatcher(lambda x: x == " " or x == ".", search_match)
-    print(metadata)
+    scores = []
+    for description in descriptions:
 
-    def calculate_ratio(seq):
-        matcher.set_seq2(seq)
+        text = description.text
+        score = 0
+        for keyword in metadata.keywords:
+            if keyword in text:
+                score += 1
+        for quality in metadata.quality:
+            if quality in text:
+                score += 1.1
+        for codec in metadata.codec:
+            if codec in text:
+                score += .75
+        scores.append(score)
 
-        blocks = matcher.get_matching_blocks()
-
-        scores = []
-        for block in blocks:
-            long_start = block[1] - block[0]
-            long_end = long_start + len(search_match)
-            long_substr = seq[long_start:long_end]
-
-            m2 = SequenceMatcher(None, search_match, long_substr)
-            r = m2.ratio()
-            if r > .999:
-                return 100
-            else:
-                scores.append(r)
-        result = int(100 * sorted(scores, reverse=True)[skip:][0])
-        return result
-
-    best_match = [
-        calculate_ratio(''.join(
-            [e for e in description.recursiveChildGenerator() if isinstance(e, str)]
-        )) for description in descriptions
-    ]
-    best_match_index = best_match.index(max(best_match))
-    print(descriptions[best_match_index].text)
-    return descriptions[best_match_index].nextSibling.find(**SUBDIVX_DOWNLOAD_MATCHER)['href']
+    results = sorted(zip(descriptions, scores), key=lambda item: item[1], reverse=True)
+    print(results[0][0].text)
+    return results[0][0].nextSibling.find(**SUBDIVX_DOWNLOAD_MATCHER)['href']
 
 
 def get_subtitle(url, path):
