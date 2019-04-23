@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 
-
-long_description = open('README.rst').read()
+long_description = open('README.md').read() + '\n' + open('HISTORY.md').read()
 
 setup(
     name='subdivx-download',
-    version='0.4',
-    description='A program to download the best matching subtitle from subdivx.com',
+    version='0.5',
+    description='A command line tool to download the best matching subtitle from subdivx.com',
     long_description=long_description,
-    author=u"Martin Gaitan, based on a Michel Peterson's work",
+    long_description_content_type='text/markdown',
+    author=u"Martin Gaitán",
     author_email='gaitan@gmail.com',
     url='https://github.com/mgaitan/subdivx-download',
     packages=['subdivx',],
@@ -27,6 +27,7 @@ setup(
         'Natural Language :: Spanish',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ]
 )
