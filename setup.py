@@ -6,7 +6,7 @@ long_description = open('README.md').read() + '\n' + open('HISTORY.md').read()
 
 setup(
     name='subdivx-download',
-    version='0.5',
+    version='0.6',
     description='A command line tool to download the best matching subtitle from subdivx.com',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -15,7 +15,7 @@ setup(
     url='https://github.com/mgaitan/subdivx-download',
     packages=['subdivx',],
     license='GNU GENERAL PUBLIC LICENCE v3.0',
-    install_requires=['beautifulsoup4', 'tvnamer'],
+    install_requires=['beautifulsoup4', 'tvnamer', 'guessit'],
     entry_points={
         'console_scripts': ['subdivx=subdivx.cli:main'],
     },

@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+0.6 (2020-06-06)
+----------------
+
+- use guessit to parse the filename
+- fix scraping the link by getting it from subtitle's detail page.
+
+
 0.5 (2019-04-23)
 ----------------
 
