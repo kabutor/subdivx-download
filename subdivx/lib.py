@@ -11,10 +11,12 @@ from bs4 import BeautifulSoup
 
 RAR_ID = b"Rar!\x1a\x07\x00"
 
-SUBDIVX_SEARCH_URL = "https://www.subdivx.com/index.php?buscar=%s+%s&accion=5&masdesc=&subtitulos=1&realiza_b=1&oxdown=1"
+SUBDIVX_SEARCH_URL = "https://www.subdivx.com/index.php"
+
+
 SUBDIVX_DOWNLOAD_MATCHER = {'name':'a', 'rel':"nofollow", 'target': "new"}
 
-LOGGER_LEVEL = logging.DEBUG
+LOGGER_LEVEL = logging.INFO
 LOGGER_FORMATTER = logging.Formatter('%(asctime)-25s %(levelname)-8s %(name)-29s %(message)s', '%Y-%m-%d %H:%M:%S')
 
 class NoResultsError(Exception):
@@ -38,49 +40,54 @@ def setup_logger(level):
     logger.setLevel(level)
 
 
-def get_subtitle_url(series_name, series_id, metadata, skip=0):
-    enc_series_name = urllib.parse.quote(series_name)
-    enc_series_id = urllib.parse.quote(series_id)
-
-    logger.debug('Starting request to subdivx.com')
-    url = SUBDIVX_SEARCH_URL % (enc_series_name, enc_series_id)
-    page = requests.get(url).text
-    logger.debug('Search Query URL: ' + url)
+def get_subtitle_url(title, number, metadata, skip=0):
+    buscar = f"{title} {number}"
+    params = {"accion": 5,
+     "subtitulos": 1,
+     "realiza_b": 1,
+     "oxdown": 1,
+     "buscar": buscar ,
+    }
+    page = requests.get(SUBDIVX_SEARCH_URL, params=params).text
     soup = BeautifulSoup(page, 'html5lib')
     titles = soup('div', id='menu_detalle_buscador')
 
     # only include results for this specific serie / episode
     # ie. search terms are in the title of the result item
-    descriptions = [
-        title.nextSibling(id='buscador_detalle_sub')[0] for title in titles
-        if series_name in title.text.lower() and series_id in title.text.lower()
-    ]
+    descriptions = {
+        t.nextSibling(id='buscador_detalle_sub')[0].text: t.next('a')[0]['href'] for t in titles
+        if all(word.lower() in t.text.lower() for word in buscar.split())
+    }
 
     if not descriptions:
-        raise(NoResultsError(' '.join(['No suitable subtitles were found for:',
-                                      series_name,
-                                      series_id]))
-        )
-    # then find the best result looking for metadata keywords in the description
+        raise NoResultsError(f'No suitable subtitles were found for: "{buscar}"')
+
+    # then find the best result looking for metadata keywords
+    # in the description
     scores = []
     for description in descriptions:
 
-        text = description.text
         score = 0
         for keyword in metadata.keywords:
-            if keyword in text:
+            if keyword in description:
                 score += 1
         for quality in metadata.quality:
-            if quality in text:
+            if quality in description:
                 score += 1.1
         for codec in metadata.codec:
-            if codec in text:
+            if codec in description:
                 score += .75
         scores.append(score)
 
-    results = sorted(zip(descriptions, scores), key=lambda item: item[1], reverse=True)
-    print(results[0][0].text)
-    return results[0][0].nextSibling.find(**SUBDIVX_DOWNLOAD_MATCHER)['href']
+    results = sorted(zip(descriptions.items(), scores), key=lambda item: item[1], reverse=True)
+
+    # get subtitle page
+    url = results[0][0][1]
+    logger.info(f"Getting from {url}")
+    page = requests.get(url).text
+    soup = BeautifulSoup(page, 'html5lib')
+    # get download link
+    return soup('a', {"class": "link1"})[0]["href"]
 
 
 def get_subtitle(url, path):

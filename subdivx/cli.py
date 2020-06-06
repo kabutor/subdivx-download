@@ -6,8 +6,8 @@ import argparse
 from collections import namedtuple
 import logging.handlers
 from contextlib import contextmanager
-
-from tvnamer.utils import FileParser, FileFinder
+from guessit import guessit
+from tvnamer.utils import FileFinder
 from . import lib
 
 _extensions = [
@@ -131,12 +131,12 @@ def main():
         filename = os.path.basename(filepath)
 
         try:
-            info = FileParser(filename).parse()
-            series_name = info.seriesname
-            series_id = 's%02de%s' % (info.seasonnumber, '-'.join(['%02d' % e for e in info.episodenumbers]))
+            info = guessit(filename)
+            number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
             metadata = extract_meta_data(filename)
+
             url = lib.get_subtitle_url(
-                series_name, series_id,
+                info["title"], number,
                 metadata,
                 args.skip)
         except lib.NoResultsError as e:
