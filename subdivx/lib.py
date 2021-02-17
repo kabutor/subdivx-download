@@ -1,4 +1,4 @@
-import requests
+import requests 
 import logging
 import logging.handlers
 import os
@@ -9,7 +9,10 @@ from zipfile import is_zipfile, ZipFile
 
 from bs4 import BeautifulSoup
 
+PYTHONUTF8=1
+
 RAR_ID = b"Rar!\x1a\x07\x00"
+RAR5_ID = b"Rar!\x1A\x07\x01\x00"
 
 SUBDIVX_SEARCH_URL = "https://www.subdivx.com/index.php"
 
@@ -19,6 +22,8 @@ SUBDIVX_DOWNLOAD_MATCHER = {'name':'a', 'rel':"nofollow", 'target': "new"}
 LOGGER_LEVEL = logging.INFO
 LOGGER_FORMATTER = logging.Formatter('%(asctime)-25s %(levelname)-8s %(name)-29s %(message)s', '%Y-%m-%d %H:%M:%S')
 
+s = requests.Session()
+
 class NoResultsError(Exception):
     pass
 
@@ -26,7 +31,14 @@ class NoResultsError(Exception):
 def is_rarfile(fn):
     '''Check quickly whether file is rar archive.'''
     buf = open(fn, "rb").read(len(RAR_ID))
+    print (buf)
     return buf == RAR_ID
+
+def is_rar5file(fn):
+    '''Check quickly whether file is rar5 archive.'''
+    buf = open(fn, "rb").read(len(RAR5_ID))
+    print (buf)
+    return buf == RAR5_ID
 
 
 def setup_logger(level):
@@ -48,7 +60,8 @@ def get_subtitle_url(title, number, metadata, skip=0):
      "oxdown": 1,
      "buscar": buscar ,
     }
-    page = requests.get(SUBDIVX_SEARCH_URL, params=params).text
+    s.headers.update({"User-Agent":"Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0"})
+    page = s.get(SUBDIVX_SEARCH_URL, params=params).text
     soup = BeautifulSoup(page, 'html5lib')
     titles = soup('div', id='menu_detalle_buscador')
 
@@ -84,7 +97,8 @@ def get_subtitle_url(title, number, metadata, skip=0):
     # get subtitle page
     url = results[0][0][1]
     logger.info(f"Getting from {url}")
-    page = requests.get(url).text
+    page = s.get(url).text
+    s.headers.update({"referer":url})
     soup = BeautifulSoup(page, 'html5lib')
     # get download link
     return soup('a', {"class": "link1"})[0]["href"]
@@ -92,20 +106,23 @@ def get_subtitle_url(title, number, metadata, skip=0):
 
 def get_subtitle(url, path):
     temp_file = NamedTemporaryFile()
-    temp_file.write(requests.get(url).content)
+    
+    logger.info(f"downloading http://www.subdivx.com/{url}")
+    
+    temp_file.write(s.get('http://www.subdivx.com/' + url).content)
     temp_file.seek(0)
-
+    
     if is_zipfile(temp_file.name):
         zip_file = ZipFile(temp_file)
-        for name in zip_file.namelist():
+        for name in zip_file.infolist():
             # don't unzip stub __MACOSX folders
-            if '.srt' in name and '__MACOSX' not in name:
-                logger.info(' '.join(['Unpacking zipped subtitle', name, 'to', os.path.dirname(path)]))
+            if '.srt' in name.filename and '__MACOSX' not in name.filename:
+                logger.info(' '.join(['Unpacking zipped subtitle', name.filename, 'to', os.path.dirname(path)]))
                 zip_file.extract(name, os.path.dirname(path))
 
         zip_file.close()
 
-    elif is_rarfile(temp_file.name):
+    elif (is_rarfile(temp_file.name) or is_rar5file(temp_file.name)):
         rar_path = path + '.rar'
         logger.info('Saving rared subtitle as %s' % rar_path)
         with open(rar_path, 'wb') as out_file:
@@ -121,4 +138,8 @@ def get_subtitle(url, path):
         except OSError:
             logger.info('Unpacking rared subtitle failed.'
                         'Please, install unrar to automate this step.')
+    else:
+        logger.info(f"unknown file type")
+
+
     temp_file.close()

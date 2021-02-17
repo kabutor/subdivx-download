@@ -129,7 +129,7 @@ def main():
                 continue
 
         filename = os.path.basename(filepath)
-
+        
         try:
             info = guessit(filename)
             number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
