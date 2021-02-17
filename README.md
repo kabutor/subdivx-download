@@ -1,32 +1,28 @@
-A fork of Michel Peterson's subdivx.com-subtitle-retriever
+A fork of Martín Gaitán's fork of Michel Peterson's subdivx.com-subtitle-retriever
 Retrieve the best matching subtitle (in spanish) for a show episode from subdivx.com
 
-This fork simplify the way to use a stand-alone program, allowing
-give a path (a filename or directory) as unique parameter and also changed
-the algorithm to find the "best match" subtitle.
+Python3 version wasn't working, I just fixed for the actual website (subdivx.com) 
 
 Also added these features:
 
-- Unpack rared subtitles beside zipped ones
-- Rename subtitles after unpack it
-- Packaging. pip installable ``setup.py`` and code modularized
-- Can retrieve subtitles for partially downloaded files (``*.part``, ``*.temp``, ``*.tmp``)
+- Unpack rared (rar5+ file format) subtitles beside zipped ones
 
 Install
 -------
-
-You can install it using pip:
-
-
 ```
-$ pip3 install --user subdivx-download
+$ git clone https://github.com/kabutor/subdivx-download
+python3 setup.py 
 ```
 
-or the development version:
+My recomendation is to use a virtual env and install it there:
 
 ```
-$ pip3 install --user -U git+https://github.com/mgaitan/subdivx-download.git
+mkdir subs
+python3 -m venv subs
+source subs/bin/activate
+then clone with git and install with all the dependencies
 ```
+
 
 Usage
 -----
