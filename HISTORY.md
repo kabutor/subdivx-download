@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.7 (2021-02-17)
+----------------
+Forked from [Martin Gaitan]
+
+- It will process the post request to subdivx.com and download and extract the subtitle.
+- Added support for rar5+ file format
 
 0.6 (2020-06-06)
 ----------------
