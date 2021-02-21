@@ -6,6 +6,7 @@ Python3 version wasn't working, I just fixed for the actual website (subdivx.com
 Also added these features:
 
 - Unpack rared (rar5+ file format) subtitles beside zipped ones
+- Added option to manually choose wich subtitle to download 20210221
 
 Install
 -------
@@ -37,7 +38,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --quiet, -q
-  --skip SKIP, -s SKIP  skip from head
+  --choose, -c          show all the available subtitle and choose what to download
   --force, -f           override existing file
 
 
