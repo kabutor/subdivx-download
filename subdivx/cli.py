@@ -105,8 +105,8 @@ def main():
     parser.add_argument('path', type=str,
                         help="file or directory to retrieve subtitles")
     parser.add_argument('--quiet', '-q', action='store_true')
-    parser.add_argument('--skip', '-s', type=int,
-                        default=0, help="skip from head")
+    parser.add_argument('--choose', '-c', action='store_true',
+                        default=False, help="Choose sub manually")
     parser.add_argument('--force', '-f', action='store_true',
                         default=False, help="override existing file")
     args = parser.parse_args()
@@ -138,9 +138,9 @@ def main():
             url = lib.get_subtitle_url(
                 info["title"], number,
                 metadata,
-                args.skip)
+                args.choose)
         except lib.NoResultsError as e:
-            lib.logger.error(e.message)
+            lib.logger.error(str(e))
             raise
 
         with subtitle_renamer(filepath):

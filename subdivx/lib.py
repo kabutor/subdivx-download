@@ -23,6 +23,8 @@ LOGGER_LEVEL = logging.INFO
 LOGGER_FORMATTER = logging.Formatter('%(asctime)-25s %(levelname)-8s %(name)-29s %(message)s', '%Y-%m-%d %H:%M:%S')
 
 s = requests.Session()
+proxies = { "http":"http://127.0.0.1:8080" }
+#s.proxies.update(proxies)
 
 class NoResultsError(Exception):
     pass
@@ -45,14 +47,15 @@ def setup_logger(level):
     global logger
 
     logger = logging.getLogger()
-
+    """
     logfile = logging.handlers.RotatingFileHandler(logger.name+'.log', maxBytes=1000 * 1024, backupCount=9)
     logfile.setFormatter(LOGGER_FORMATTER)
     logger.addHandler(logfile)
+    """
     logger.setLevel(level)
 
 
-def get_subtitle_url(title, number, metadata, skip=0):
+def get_subtitle_url(title, number, metadata, choose=False):
     buscar = f"{title} {number}"
     params = {"accion": 5,
      "subtitulos": 1,
@@ -93,9 +96,17 @@ def get_subtitle_url(title, number, metadata, skip=0):
         scores.append(score)
 
     results = sorted(zip(descriptions.items(), scores), key=lambda item: item[1], reverse=True)
-
-    # get subtitle page
-    url = results[0][0][1]
+    if (choose):
+        count = 0
+        for item in (results):
+            print ("\t \033[92m %i \033[0m %s" % (count , item[0][0]))
+            count = count +1
+        res = int(input ("Sub to download?(number)"))
+        print (res)
+        url = results[res][0][1]
+    else:
+        # get subtitle page
+        url = results[0][0][1]
     logger.info(f"Getting from {url}")
     page = s.get(url).text
     s.headers.update({"referer":url})
