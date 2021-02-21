@@ -5,7 +5,7 @@ Python3 version wasn't working, I just fixed for the actual website (subdivx.com
 
 Also added these features:
 
-- Unpack rared (rar5+ file format) subtitles beside zipped ones
+- Unpack rared (rar5+ file format) subtitles beside zipped and old rar version files
 - Added option to manually choose wich subtitle to download 20210221
 
 Install
