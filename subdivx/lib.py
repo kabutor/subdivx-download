@@ -101,8 +101,7 @@ def get_subtitle_url(title, number, metadata, choose=False):
         for item in (results):
             print ("\t \033[92m %i \033[0m %s" % (count , item[0][0]))
             count = count +1
-        res = int(input ("Sub to download?(number)"))
-        print (res)
+        res = int(input ("Sub to download?(number)") or "0")
         url = results[res][0][1]
     else:
         # get subtitle page
