@@ -56,6 +56,9 @@ def setup_logger(level):
 
 
 def get_subtitle_url(title, number, metadata, choose=False):
+    #Filter the title to avoid 's in names
+    title_f = [ x for x in title.split() if "\'s" not in x ]
+    title = ' '.join(title_f)
     buscar = f"{title} {number}"
     params = {"accion": 5,
      "subtitulos": 1,
@@ -101,11 +104,11 @@ def get_subtitle_url(title, number, metadata, choose=False):
         for item in (results):
             print ("\t \033[92m %i \033[0m %s" % (count , item[0][0]))
             count = count +1
-        res = int(input ("Sub to download?(number)") or "0")
-        url = results[res][0][1]
+        res = int(input ("Sub to download? (0)") or "0")
+        url = (results[res][0][1]).encode("utf-8")
     else:
         # get subtitle page
-        url = results[0][0][1]
+        url = (results[0][0][1]).encode("utf-8")
     logger.info(f"Getting from {url}")
     page = s.get(url).text
     s.headers.update({"referer":url})
@@ -116,10 +119,9 @@ def get_subtitle_url(title, number, metadata, choose=False):
 
 def get_subtitle(url, path):
     temp_file = NamedTemporaryFile()
+    logger.info(f"downloading https://www.subdivx.com/{url}")
     
-    logger.info(f"downloading http://www.subdivx.com/{url}")
-    
-    temp_file.write(s.get('http://www.subdivx.com/' + url).content)
+    temp_file.write(s.get('https://www.subdivx.com/' + url).content)
     temp_file.seek(0)
     
     if is_zipfile(temp_file.name):
