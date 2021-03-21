@@ -47,11 +47,13 @@ _keywords = (
     'immerse',
     'internal',
     'ion10',
+    'killers',
     'loki',
     'lol',
     'mement',
     'notv',
     'sfm',
+    'sva',
     'sparks',
     'turbo'
 )
@@ -132,7 +134,11 @@ def main():
         
         try:
             info = guessit(filename)
-            number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
+            if ((info["type"] == "episode") and ("year" in info)):
+                number = str(info["year"]) + " " + f"s{info['season']:02}e{info['episode']:02} "
+            else:
+                number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
+
             metadata = extract_meta_data(filename)
 
             url = lib.get_subtitle_url(
