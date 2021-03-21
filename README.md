@@ -6,7 +6,7 @@ Python3 version wasn't working, I just fixed for the actual website (subdivx.com
 Also added these features:
 
 - Unpack rared (rar5+ file format) subtitles beside zipped and old rar version files
-- Added option to manually choose wich subtitle to download 20210221
+- Added option to manually choose wich subtitle to download (-c) 20210221
 - Change the way links are used to UTF-8 to avoid weird characters bug 20210302
 - When searching for a tvshow if the year is present it will use it also to improve search 20210321
 
