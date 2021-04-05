@@ -9,7 +9,8 @@ Also added these features:
 - Added option (-c) to manually choose wich subtitle to download 20210221
 - Change the way links are used to UTF-8 to avoid weird characters bug 20210302
 - When searching for a tvshow if the year is present it will use it also to improve search 20210321
-- You can add keywords (-k) to improve the automatic selection among the subtitles available for a show.
+- You can add keywords (-k) to improve the automatic selection among the subtitles available for a show. 05042021
+- You can define the title of the show manually (-t) Useful when you have a folder with all the episodes titles, but not the show main title 06042021
 
 Install
 -------
@@ -43,10 +44,11 @@ optional arguments:
   --quiet, -q
   --choose, -c          show all the available subtitle and choose what to download
   --force, -f           override existing file
-  --keyword -k "<string>" add the <string> to the list of keywords. Keywords are used when you have 
+  --keyword -k "<string>" _ Add the <string> to the list of keywords. Keywords are used when you have 
   10 subtitles for a show or movie,and you know in the description there is a keyword for that subtitle.
   Example if rama966 is the creator of the subtitle you want to download, add it to the keyword and the 
-  script will download that one. Combine -c with -k to see how subtitles are picked. 05042021
+  script will download that one. Combine -c with -k to see how subtitles are picked. 
+  --title -t "<string>" _ Set the show main title to use instead of getting it from the file name
 
 
 .. tip::
