@@ -55,7 +55,6 @@ optional arguments:
     If you want to look for a subtitle with an 's apostrophe, check that the file name is "zoey's.extraordinary.playlist.s01e01.mp4" 
     and no "zoeys.extraordinary.playlist.s01e01.mp4". Also you can remove the problematic words from the file name and leave it as
     "extraordinary.playlist.s01e04.mp4" and it may work.
+    Also can use the -t option to set the name, and then use the apostrophe escaped (\')
 
-    Run ``subdivx`` before ``tvnamer`` to give more metadata
-    in your subtitle seach
 ```
