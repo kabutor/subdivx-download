@@ -115,6 +115,7 @@ def main():
     parser.add_argument('--force', '-f', action='store_true',
                         default=False, help="override existing file")
     parser.add_argument('--keyword','-k',type=str,help="Add keyword to search among subtitles")
+    parser.add_argument('--title','-t',type=str,help="Set the title of the show")
     args = parser.parse_args()
     lib.setup_logger(lib.LOGGER_LEVEL)
 
@@ -145,8 +146,12 @@ def main():
 
             metadata = extract_meta_data(filename, args.keyword)
 
+            if (args.title):
+                title=args.title
+            else:
+                title = info["title"]
             url = lib.get_subtitle_url(
-                info["title"], number,
+                title, number,
                 metadata,
                 args.choose)
         except lib.NoResultsError as e:
