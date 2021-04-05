@@ -43,9 +43,10 @@ optional arguments:
   --quiet, -q
   --choose, -c          show all the available subtitle and choose what to download
   --force, -f           override existing file
-  --keyword -k "<string>" add the <string> to the list of keywords. Keywords are used when you have 10 subtitles for a show or movie,
-          and you know in the description there is a keyword for that subtitle. Example if rama966 is the creator of the subtitle you want to download, 
-          add it to the keyword and the script will download that one. Combine -c with -k to see how subtitles are picked.
+  --keyword -k "<string>" add the <string> to the list of keywords. Keywords are used when you have 
+  10 subtitles for a show or movie,and you know in the description there is a keyword for that subtitle.
+  Example if rama966 is the creator of the subtitle you want to download, add it to the keyword and the 
+  script will download that one. Combine -c with -k to see how subtitles are picked. 05042021
 
 
 .. tip::
