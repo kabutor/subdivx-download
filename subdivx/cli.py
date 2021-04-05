@@ -64,7 +64,7 @@ _codecs = ('xvid', 'x264', 'h264', 'x265')
 Metadata = namedtuple('Metadata', 'keywords quality codec')
 
 
-def extract_meta_data(filename):
+def extract_meta_data(filename, kword):
     f = filename.lower()[:-4]
     def _match(options):
         try:
@@ -75,6 +75,9 @@ def extract_meta_data(filename):
     keywords = _match(_keywords)
     quality = _match(_qualities)
     codec = _match(_codecs)
+    #Split keywords and add to the list
+    if (kword):
+        keywords = keywords + kword.split(' ')
     return Metadata(keywords, quality, codec)
 
 
@@ -111,6 +114,7 @@ def main():
                         default=False, help="Choose sub manually")
     parser.add_argument('--force', '-f', action='store_true',
                         default=False, help="override existing file")
+    parser.add_argument('--keyword','-k',type=str,help="Add keyword to search among subtitles")
     args = parser.parse_args()
     lib.setup_logger(lib.LOGGER_LEVEL)
 
@@ -139,7 +143,7 @@ def main():
             else:
                 number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
 
-            metadata = extract_meta_data(filename)
+            metadata = extract_meta_data(filename, args.keyword)
 
             url = lib.get_subtitle_url(
                 info["title"], number,

@@ -33,13 +33,13 @@ class NoResultsError(Exception):
 def is_rarfile(fn):
     '''Check quickly whether file is rar archive.'''
     buf = open(fn, "rb").read(len(RAR_ID))
-    print (buf)
+    #print (buf)
     return buf == RAR_ID
 
 def is_rar5file(fn):
     '''Check quickly whether file is rar5 archive.'''
     buf = open(fn, "rb").read(len(RAR5_ID))
-    print (buf)
+    #print (buf)
     return buf == RAR5_ID
 
 
