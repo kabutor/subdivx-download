@@ -44,6 +44,9 @@ _keywords = (
     'fov',
     'fqm',
     'ftv',
+    'galaxyrg',
+    'galaxytv',
+    'hazmatt',
     'immerse',
     'internal',
     'ion10',
@@ -51,7 +54,9 @@ _keywords = (
     'loki',
     'lol',
     'mement',
+    'minx',
     'notv',
+    'phoenix',
     'sfm',
     'sva',
     'sparks',
@@ -73,6 +78,7 @@ def extract_meta_data(filename, kword):
             matches = []
         return matches
     keywords = _match(_keywords)
+    print(keywords)
     quality = _match(_qualities)
     codec = _match(_codecs)
     #Split keywords and add to the list
@@ -145,7 +151,7 @@ def main():
                 number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
 
             metadata = extract_meta_data(filename, args.keyword)
-
+            
             if (args.title):
                 title=args.title
             else:
