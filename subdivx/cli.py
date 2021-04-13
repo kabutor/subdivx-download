@@ -78,7 +78,6 @@ def extract_meta_data(filename, kword):
             matches = []
         return matches
     keywords = _match(_keywords)
-    print(keywords)
     quality = _match(_qualities)
     codec = _match(_codecs)
     #Split keywords and add to the list
