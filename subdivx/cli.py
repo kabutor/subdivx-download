@@ -57,6 +57,7 @@ _keywords = (
     'minx',
     'notv',
     'phoenix',
+    'rarbg',
     'sfm',
     'sva',
     'sparks',
