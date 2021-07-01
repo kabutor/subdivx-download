@@ -145,10 +145,7 @@ def main():
         
         try:
             info = guessit(filename)
-            if ((info["type"] == "episode") and ("year" in info)):
-                number = str(info["year"]) + " " + f"s{info['season']:02}e{info['episode']:02} "
-            else:
-                number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
+            number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
 
             metadata = extract_meta_data(filename, args.keyword)
             
