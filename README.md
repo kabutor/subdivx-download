@@ -25,7 +25,11 @@ My recomendation is to use a virtual env and install it there:
 mkdir subs
 python3 -m venv subs
 source subs/bin/activate
-then clone with git and install with all the dependencies
+then clone with git and install with all the dependencies among them:
+pip install guessit
+pip install html5lib
+pip install tvnamer
+pip install beautifulsoup4
 ```
 
 
