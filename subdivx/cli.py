@@ -159,10 +159,10 @@ def main():
                 args.choose)
         except lib.NoResultsError as e:
             lib.logger.error(str(e))
-            raise
-
-        with subtitle_renamer(filepath):
-            lib.get_subtitle(url, 'temp__' + filename )
+            url=''
+        if(url !=''):
+            with subtitle_renamer(filepath):
+                lib.get_subtitle(url, 'temp__' + filename )
 
 
 if __name__ == '__main__':
