@@ -64,9 +64,9 @@ def get_subtitle_url(title, number, metadata, choose=False):
      "subtitulos": 1,
      "realiza_b": 1,
      "oxdown": 1,
-     "buscar": buscar ,
+     "buscar2": buscar ,
     }
-    s.headers.update({"User-Agent":"Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0"})
+    s.headers.update({"User-Agent":"Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0"})
     page = s.get(SUBDIVX_SEARCH_URL, params=params).text
     soup = BeautifulSoup(page, 'html5lib')
     titles = soup('div', id='menu_detalle_buscador')
