@@ -11,7 +11,7 @@ Also added these features:
 - <strike>When searching for a tvshow if the year is present it will use it also to improve search 20210321</strike> removed as 20210701
 - You can add keywords (-k) to improve the automatic selection among the subtitles available for a show. 20210405
 - You can define the title of the show manually (-t) Useful when you have a folder with all the episodes titles, but not the show main title 20210406
-- If no subtitle is available, program will continue for next title (in case you try to download several episodes with one command), also error is cleaner 20211018
+- If no subtitle is available, program will continue for next title (in case you try to download several episodes with one command), also the message in case of error is better explained 20211018
 
 Install
 -------
