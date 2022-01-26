@@ -79,7 +79,7 @@ def get_subtitle_url(title, number, metadata, choose=False):
     }
 
     if not descriptions:
-        raise NoResultsError(f'No suitable subtitles were found for: "{buscar}"')
+        raise NoResultsError(f'\033[31m[+]\033[0mNo suitable subtitles were found for: "{buscar}"')
 
     # then find the best result looking for metadata keywords
     # in the description
@@ -129,14 +129,14 @@ def get_subtitle(url, path):
         for name in zip_file.infolist():
             # don't unzip stub __MACOSX folders
             if '.srt' in name.filename and '__MACOSX' not in name.filename:
-                logger.info(' '.join(['Unpacking zipped subtitle', name.filename, 'to', os.path.dirname(path)]))
+                logger.info(' '.join(['\033[32m[*]\033[0mUnpacking zipped subtitle', name.filename, 'to', os.path.dirname(path)]))
                 zip_file.extract(name, os.path.dirname(path))
 
         zip_file.close()
 
     elif (is_rarfile(temp_file.name) or is_rar5file(temp_file.name)):
         rar_path = path + '.rar'
-        logger.info('Saving rared subtitle as %s' % rar_path)
+        logger.info('\033[32m[*]\033[0mSaving rared subtitle as %s' % rar_path)
         with open(rar_path, 'wb') as out_file:
             out_file.write(temp_file.read())
 
