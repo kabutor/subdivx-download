@@ -15,7 +15,7 @@ setup(
     url='https://github.com/kabutor/subdivx-download',
     packages=['subdivx',],
     license='GNU GENERAL PUBLIC LICENCE v3.0',
-    install_requires=['beautifulsoup4', 'tvnamer', 'guessit'],
+    install_requires=['beautifulsoup4', 'tvnamer', 'guessit','html5lib'],
     entry_points={
         'console_scripts': ['subdivx=subdivx.cli:main'],
     },

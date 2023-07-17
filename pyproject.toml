@@ -1,0 +1,24 @@
+[project]
+name = "subdivx-download"
+version = "0.8"
+authors = [
+  { name="kabu", email="spam@gmail.com" },
+]
+description = "A command line tool to download the best matching subtitle from subdivx.com"
+readme = "README.md"
+requires-python = ">=3.4"
+classifiers = [
+	'Development Status :: 4 - Beta',
+	'Environment :: Console',
+	'Intended Audience :: End Users/Desktop',
+	'License :: OSI Approved :: GNU General Public License (GPL)',
+	'Natural Language :: Spanish',
+	'Operating System :: OS Independent',
+	'Programming Language :: Python',
+	'Programming Language :: Python :: 3 :: Only',
+	'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/sampleproject"
+"Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
