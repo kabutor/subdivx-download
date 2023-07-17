@@ -145,10 +145,12 @@ def main():
         
         try:
             info = guessit(filename)
-            if (hasattr(info['season'], '__len__') and (not isinstance(info['season'], str)) ):
-                info['season'] = info['season'][0]
-            number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
-
+            if 'season' in info:
+                if (hasattr(info['season'], '__len__') and (not isinstance(info['season'], str)) ):
+                    info['season'] = info['season'][0]
+                number = f"s{info['season']:02}e{info['episode']:02}" if info["type"] == "episode" else info["year"]
+            else:
+                number = info["year"]
             metadata = extract_meta_data(filename, args.keyword)
             
             if (args.title):
