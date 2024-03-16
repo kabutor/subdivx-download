@@ -14,7 +14,6 @@ import logging.handlers
 from contextlib import contextmanager
 from guessit import guessit
 from tvnamer.utils import FileFinder
-import requests 
 import logging.handlers
 import urllib.parse
 
