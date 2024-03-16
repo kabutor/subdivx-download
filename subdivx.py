@@ -25,7 +25,7 @@ import time
 import re, os
 
 # download path set, need to be full path
-download_path = os.path.join(os.getcwd(), "down")
+download_path = "/home/user/tmp/down"
 # check if download path is empty
 if (len(os.listdir(download_path)) > 0 and (os.path.isdir(download_path))):
     print("Download folder ./down not Empty or exist")
@@ -68,9 +68,6 @@ driver.set_window_size(1280,1024)
 #                  "accept-language":"es-ES;es;q=0.9;en;q=0.8"
 #                  })
 
-# init browser
-driver.get("https://www.subdivx.com/index.php" )
-
 #driver.get("https://www.subdivx.com/paginas/resultados.php", verify=False )
 #driver.get("https://www.subdivx.com/paginas/navbar.php", verify=False )
 
@@ -104,6 +101,8 @@ def setup_logger(level):
 
 
 def get_subtitle_down(title, number, metadata, choose=False):
+    # init browser
+    driver.get("https://www.subdivx.com/index.php" )
     #Filter the title to avoid 's in names
     title_f = [ x for x in title.split() if "\'s" not in x ]
     title = ' '.join(title_f)
