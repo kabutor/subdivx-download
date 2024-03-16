@@ -1,7 +1,40 @@
+***News on 16 March 2024***
+
+As of march 2024 I realized that this stopped working, I went to the subdivx.com site and it has changed, a lot, so this stopped working until now, this is now working, probably there are some problems still that need to be fixed, and I want to make the chrome headless, but for now it's working.
+
+I was trying to fix, doing small changes, but soon I realized that the new site is full of javascript, the old python request module wasn't gonna do the trick anymore, time to draw the big guns, Selenium and make it work again.
+
+The only file you need now is the subdix.py file, you have to create a folder named "down" inside where the python script is located, and run it as before and the subtitle should be downloaded and renamed.
+```
+subdivx.py Lucifer.s01e01.hdtv.mkv
+    0 Mar 15 11:46 Lucifer.s01e01.hdtv.mkv
+59533 Aug 12  2015 Lucifer.s01e01.hdtv.srt
+```
+
+Dependencies you need to install 
+
+guessit
+
+html5lib
+
+tvnamer
+
+beautifulsoup4
+
+python3-selenium  (tested with 4.18.1)
+
+chromium-driver
+
+
+
+
+
+========= OLD INSTRUCTIONS BELOW ================== just keeping them until I'm confident on deleting this
+
 A fork of Martín Gaitán's fork of Michel Peterson's subdivx.com-subtitle-retriever
 Retrieve the best matching subtitle (in spanish) for a show episode from subdivx.com
 
-Python3 version wasn't working, I just fixed for the actual website (subdivx.com) 
+Python3 version wasn't working, I just fixed for the actual website (subdivx.com)
 
 Also added these features:
 
