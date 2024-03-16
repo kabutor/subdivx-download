@@ -4,7 +4,7 @@ As of march 2024 I realized that this stopped working, I went to the subdivx.com
 
 I was trying to fix, doing small changes, but soon I realized that the new site is full of javascript, the old python request module wasn't gonna do the trick anymore, time to draw the big guns, Selenium and make it work again.
 
-The only file you need now is the subdix.py file, you have to create a folder named "down" inside where the python script is located, and run it as before and the subtitle should be downloaded and renamed.
+The only file you need now is the subdix.py file, ***you have to create a folder named "down"*** inside where the python script is located, and run it as before and the subtitle should be downloaded and renamed.
 ```
 subdivx.py Lucifer.s01e01.hdtv.mkv
     0 Mar 15 11:46 Lucifer.s01e01.hdtv.mkv
