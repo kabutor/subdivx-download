@@ -22,7 +22,7 @@ from zipfile import is_zipfile, ZipFile
 
 from bs4 import BeautifulSoup
 import time
-import re, os
+import re
 
 # download path set, need to be full path
 download_path = "/home/user/tmp/down"
@@ -35,11 +35,6 @@ PYTHONUTF8=1
 
 RAR_ID = b"Rar!\x1a\x07\x00"
 RAR5_ID = b"Rar!\x1A\x07\x01\x00"
-
-SUBDIVX_SEARCH_URL = "https://www.subdivx.com/inc/ajax.php"
-
-
-SUBDIVX_DOWNLOAD_MATCHER = {'name':'a', 'rel':"nofollow", 'target': "new"}
 
 LOGGER_LEVEL = logging.INFO
 LOGGER_FORMATTER = logging.Formatter('%(asctime)-25s %(levelname)-8s %(name)-29s %(message)s', '%Y-%m-%d %H:%M:%S')
@@ -54,22 +49,15 @@ prefs = {
             "safebrowsing_for_trusted_sources_enabled": False,
             "safebrowsing.enabled": False}
 op.add_experimental_option('prefs', prefs)
-#op.add_argument("download.default_directory=./down")
 
 PROXY="http://127.0.0.1:8080"
 #op.add_argument('--proxy-server=%s' % PROXY)
+op.add_argument("--headless=new")
 driver = webdriver.Chrome(service=service, options=op)
-#options=op)
+
 driver.implicitly_wait(3)
 driver.set_window_size(1280,1024)
 
-
-#s.headers.update({"User-Agent":"Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0",                  "accept-encoding":"gzip, deflate, br", 
-#                  "accept-language":"es-ES;es;q=0.9;en;q=0.8"
-#                  })
-
-#driver.get("https://www.subdivx.com/paginas/resultados.php", verify=False )
-#driver.get("https://www.subdivx.com/paginas/navbar.php", verify=False )
 
 class NoResultsError(Exception):
     pass
@@ -108,11 +96,11 @@ def get_subtitle_down(title, number, metadata, choose=False):
     title = ' '.join(title_f)
     buscar = f"{title} {number}"
     
-    print(buscar)
     # wait until search box
     searchElement = WebDriverWait(driver, 10).until( EC.presence_of_element_located((By.XPATH, '//*[@id="buscar"]')))
     searchElement.send_keys(buscar)
     searchElement.send_keys(Keys.RETURN)
+    print("Loading website")
     time.sleep(2)
     page = driver.page_source.encode('utf-8')
     #page = .post(SUBDIVX_SEARCH_URL, params=params, verify=False).text
@@ -121,12 +109,7 @@ def get_subtitle_down(title, number, metadata, choose=False):
     
     # only include results for this specific serie / episode
     # ie. search terms are in the title of the result item
-    '''
-    descriptions = {
-        t.nextSibling(id='buscador_detalle_sub')[0].text: t.next('a')[0]['href'] for t in titles
-        if all(word.lower() in t.text.lower() for word in buscar.split())
-    }
-    '''
+
     count = 1   # index of selenium search at 1 3 5 7 9 11 13 15 17
     descriptions = {}
     for t in titles:
@@ -169,7 +152,7 @@ def get_subtitle_down(title, number, metadata, choose=False):
     # now search the elements on selenium
     clickElement = driver.find_element(By.CSS_SELECTOR,"#resultados > tbody > tr:nth-child(" + url + ")")
     clickElement.click()
-    logger.info(f"Getting from {url}")
+    logger.info(f"Getting subtitle for {buscar}")
     downElement = driver.find_element(By.CSS_SELECTOR,"#btnDescargar")
     downElement.click()
     # TODO
@@ -183,8 +166,9 @@ def get_subtitle_down(title, number, metadata, choose=False):
                 """)
     print(filename)
     '''
-    # wait for download
-    time.sleep(3)
+    # wait for download 2 seconds should be enough, but sometimes website is slow, 4 is safer
+    # if you get a filedown[0] error empty or missing, website is slower than 4 seconds
+    time.sleep(4)
     filedown = os.listdir(download_path)
     return filedown[0] 
 
