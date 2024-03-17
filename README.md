@@ -1,6 +1,6 @@
 ***News on 16 March 2024***
 
-As of march 2024 I realized that this stopped working, I went to the subdivx.com site and it has changed, a lot, so this stopped working until now, this is now working, probably there are some problems still that need to be fixed, and I want to make the chrome headless, but for now it's working.
+As of march 2024 I realized that this stopped working, I may be the only one that uses it, but I use it almost daily, I went to the subdivx.com site and it has changed, a lot, a new version of the script weas need and here it is.
 
 I was trying to fix, doing small changes, but soon I realized that the new site is full of javascript, the old python request module wasn't gonna do the trick anymore, time to draw the big guns, Selenium and make it work again.
 
