@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait      
 from selenium.webdriver.support import expected_conditions as EC  
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 import os
 import logging
 import argparse
@@ -25,7 +26,7 @@ import time
 import re
 
 # download path set, need to be full path
-download_path = "/home/user/tmp/down"
+download_path = "/home/username/tmp/down"
 # check if download path is empty
 if (len(os.listdir(download_path)) > 0 and (os.path.isdir(download_path))):
     print("Download folder ./down not Empty or exist")
@@ -52,7 +53,7 @@ op.add_experimental_option('prefs', prefs)
 
 PROXY="http://127.0.0.1:8080"
 #op.add_argument('--proxy-server=%s' % PROXY)
-op.add_argument("--headless=new")
+#op.add_argument("--headless=new")
 driver = webdriver.Chrome(service=service, options=op)
 
 driver.implicitly_wait(3)
@@ -148,9 +149,15 @@ def get_subtitle_down(title, number, metadata, choose=False):
     else:
         # get subtitle page
         url = results[0][0][0]
-    
     # now search the elements on selenium
     clickElement = driver.find_element(By.CSS_SELECTOR,"#resultados > tbody > tr:nth-child(" + url + ")")
+    # Move to the position of the element
+    action=ActionChains(driver)
+    action.move_to_element(clickElement).perform()
+    # click
+    time.sleep(1)
+    clickElement = driver.find_element(By.CSS_SELECTOR,"#resultados > tbody > tr:nth-child(" + url + ")")
+
     clickElement.click()
     logger.info(f"Getting subtitle for {buscar}")
     downElement = driver.find_element(By.CSS_SELECTOR,"#btnDescargar")
