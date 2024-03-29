@@ -53,12 +53,13 @@ op.add_experimental_option('prefs', prefs)
 
 PROXY="http://127.0.0.1:8080"
 #op.add_argument('--proxy-server=%s' % PROXY)
-#op.add_argument("--headless=new")
+'''
+op.add_argument("--headless=new")
 driver = webdriver.Chrome(service=service, options=op)
 
 driver.implicitly_wait(3)
 driver.set_window_size(1280,1024)
-
+'''
 
 class NoResultsError(Exception):
     pass
@@ -332,6 +333,8 @@ def main():
     parser.add_argument('--quiet', '-q', action='store_true')
     parser.add_argument('--choose', '-c', action='store_true',
                         default=False, help="Choose sub manually")
+    parser.add_argument('--browser', '-b', action='store_true',
+                        default=False, help="Disable headless mode for debug")
     parser.add_argument('--force', '-f', action='store_true',
                         default=False, help="override existing file")
     parser.add_argument('--keyword','-k',type=str,help="Add keyword to search among subtitles")
@@ -356,7 +359,15 @@ def main():
                 continue
 
         filename = os.path.basename(filepath)
-        
+        # Second init selenium
+        if not (args.browser):
+            op.add_argument("--headless=new")
+        global driver
+        driver = webdriver.Chrome(service=service, options=op)
+
+        driver.implicitly_wait(3)
+        driver.set_window_size(1280,1024)
+
         try:
             info = guessit(filename)
             if 'season' in info:
