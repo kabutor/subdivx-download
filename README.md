@@ -25,11 +25,48 @@ python3-selenium  (tested with 4.18.1)
 
 chromium-driver
 
+Usage
+-----
+
+
+```
+usage: subdivx [-h] [--quiet] [--skip SKIP] [--force] path
+
+positional arguments:
+  path                  file or directory to retrieve subtitles
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --quiet, -q
+  --browser, -b        remove the headless option to the Selenium chromedriver, that means you will see the browser window, used to debug and see what selenium is doing
+  --choose, -c          show all the available subtitle and choose what to download
+  --force, -f           override existing file
+  --keyword -k "<string>" _ Add the <string> to the list of keywords. Keywords are used when you have 
+  10 subtitles for a show or movie,and you know in the description there is a keyword for that subtitle.
+  Example if rama966 is the creator of the subtitle you want to download, add it to the keyword and the 
+  script will download that one. Combine -c with -k to see how subtitles are picked. 
+  --title -t "<string>" _ Set the show main title to use instead of getting it from the file name
+
+
+.. tip::
+    If you want to look for a subtitle with an 's apostrophe, check that the file name is "zoey's.extraordinary.playlist.s01e01.mp4" 
+    and no "zoeys.extraordinary.playlist.s01e01.mp4". Also you can remove the problematic words from the file name and leave it as
+    "extraordinary.playlist.s01e04.mp4" and it may work.
+    Also can use the -t option to set the name, and then use the apostrophe escaped (\')
+
+```
 
 
 
 
-========= OLD INSTRUCTIONS BELOW ================== just keeping them until I'm confident on deleting this
+
+
+
+
+
+========= OLD INSTRUCTIONS BELOW ================== 
+
+just keeping them until I'm confident on deleting this
 
 A fork of Martín Gaitán's fork of Michel Peterson's subdivx.com-subtitle-retriever
 Retrieve the best matching subtitle (in spanish) for a show episode from subdivx.com
@@ -67,32 +104,3 @@ pip install beautifulsoup4
 ```
 
 
-Usage
------
-
-
-```
-usage: subdivx [-h] [--quiet] [--skip SKIP] [--force] path
-
-positional arguments:
-  path                  file or directory to retrieve subtitles
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --quiet, -q
-  --choose, -c          show all the available subtitle and choose what to download
-  --force, -f           override existing file
-  --keyword -k "<string>" _ Add the <string> to the list of keywords. Keywords are used when you have 
-  10 subtitles for a show or movie,and you know in the description there is a keyword for that subtitle.
-  Example if rama966 is the creator of the subtitle you want to download, add it to the keyword and the 
-  script will download that one. Combine -c with -k to see how subtitles are picked. 
-  --title -t "<string>" _ Set the show main title to use instead of getting it from the file name
-
-
-.. tip::
-    If you want to look for a subtitle with an 's apostrophe, check that the file name is "zoey's.extraordinary.playlist.s01e01.mp4" 
-    and no "zoeys.extraordinary.playlist.s01e01.mp4". Also you can remove the problematic words from the file name and leave it as
-    "extraordinary.playlist.s01e04.mp4" and it may work.
-    Also can use the -t option to set the name, and then use the apostrophe escaped (\')
-
-```
