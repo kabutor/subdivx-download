@@ -103,7 +103,7 @@ def get_subtitle_down(title, number, metadata, choose=False):
     searchElement.send_keys(buscar)
     searchElement.send_keys(Keys.RETURN)
     print("Loading website")
-    time.sleep(2)
+    time.sleep(10)
     page = driver.page_source.encode('utf-8')
     #page = .post(SUBDIVX_SEARCH_URL, params=params, verify=False).text
     soup = BeautifulSoup(page, 'html5lib')
@@ -136,7 +136,6 @@ def get_subtitle_down(title, number, metadata, choose=False):
             if codec in description:
                 score += .75
         scores.append(score)
-
 
     results = sorted(zip(descriptions.items(), scores), key=lambda item: item[1], reverse=True)
     
@@ -174,10 +173,16 @@ def get_subtitle_down(title, number, metadata, choose=False):
                 """)
     print(filename)
     '''
-    # wait for download 2 seconds should be enough, but sometimes website is slow, 4 is safer
-    # if you get a filedown[0] error empty or missing, website is slower than 4 seconds
-    time.sleep(4)
-    filedown = os.listdir(download_path)
+    # wait for download 4 seconds should be enough, but sometimes website is slow, 10 is safer
+    # if you get a filedown[0] error empty or missing, website is slower than the seconds you set
+    # I just updated the script to wait until file is downloaded
+    is_down = False
+    while not is_down:
+        time.sleep(4)
+        filedown = os.listdir(download_path)
+        if len(filedown) > 0:
+            is_down = True
+
     return filedown[0] 
 
 
