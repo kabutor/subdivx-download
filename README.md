@@ -1,3 +1,8 @@
+
+1 Jan 2025. New version only need to be set a cookie file, that will be used by selenium to download the subs, no login is required, but you need to have a session on the website, that is managed with the cookie.
+The temp directory is now created and deleted each time is run
+
+
 ***News on 16 March 2024***
 
 As of march 2024 I realized that this stopped working, I may be the only one that uses it, but I use it almost daily, I went to the subdivx.com site and it has changed, a lot, a new version of the script weas need and here it is.
