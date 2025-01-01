@@ -24,12 +24,19 @@ from zipfile import is_zipfile, ZipFile
 from bs4 import BeautifulSoup
 import time
 import re
+import pickle
 
-# download path set, need to be full path
-download_path = "/home/username/tmp/down"
+
+# Cooki file used, set this before running
+cookie_file_name = '/home/user/series/cookie_sub.txt'
+
+# download path temp 
+download_path = os.path.join('/tmp',format(hash(os.times())))
+os.makedirs(download_path)
+
 # check if download path is empty
 if (len(os.listdir(download_path)) > 0 and (os.path.isdir(download_path))):
-    print("Download folder ./down not Empty or exist")
+    print("Download folder ./down not Empty or exist " , download_path)
     quit()
 
 PYTHONUTF8=1
@@ -53,12 +60,13 @@ op.add_experimental_option('prefs', prefs)
 
 PROXY="http://127.0.0.1:8080"
 #op.add_argument('--proxy-server=%s' % PROXY)
+op.add_argument("--user-Agent=Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0")
+op.add_argument('--sec-ch-ua="Chrome"; v="73", "(Not;Browser"; v="12"')
+#op.add_argument('--user-data-dir=/home/user/.config/chromium/Profile 1/')
 '''
 op.add_argument("--headless=new")
 driver = webdriver.Chrome(service=service, options=op)
 
-driver.implicitly_wait(3)
-driver.set_window_size(1280,1024)
 '''
 
 class NoResultsError(Exception):
@@ -92,7 +100,23 @@ def setup_logger(level):
 
 def get_subtitle_down(title, number, metadata, choose=False):
     # init browser
-    driver.get("https://www.subdivx.com/index.php" )
+    driver.get("https://www.subdivx.com/" )
+    #cookie
+    #cookie_file_name = '/home/user/series/cookie_sub.txt'
+    if os.path.isfile(cookie_file_name):
+        with open(cookie_file_name,'rb') as f:
+            temp_c = pickle.load(f)
+            for cookie in temp_c:
+                #print("Adding Cookie " , cookie)
+                #driver.delete_all_cookies()
+                driver.add_cookie(cookie)
+                #print(cookie)
+    else:
+        cookies_list = driver.get_cookies()
+        #print("Saving cookie", cookies_list)
+        with open(cookie_file_name,'wb') as wf:
+            pickle.dump(cookies_list, wf)
+
     #Filter the title to avoid 's in names
     title_f = [ x for x in title.split() if "\'s" not in x ]
     title = ' '.join(title_f)
@@ -100,22 +124,30 @@ def get_subtitle_down(title, number, metadata, choose=False):
     
     # wait until search box
     searchElement = WebDriverWait(driver, 10).until( EC.presence_of_element_located((By.XPATH, '//*[@id="buscar"]')))
+   
+    time.sleep(10)
+    '''
+    for elem in buscar: 
+        searchElement.send_keys(elem)
+        time.sleep(0.1)
+    '''
     searchElement.send_keys(buscar)
     searchElement.send_keys(Keys.RETURN)
+
     print("Loading website")
-    time.sleep(10)
+    time.sleep(20)
     page = driver.page_source.encode('utf-8')
     #page = .post(SUBDIVX_SEARCH_URL, params=params, verify=False).text
     soup = BeautifulSoup(page, 'html5lib')
     titles = soup.find_all("tr",attrs={'class': re.compile('^trMarcar.*')}) 
-    
+    # debug print(titles) 
     # only include results for this specific serie / episode
     # ie. search terms are in the title of the result item
 
     count = 1   # index of selenium search at 1 3 5 7 9 11 13 15 17
     descriptions = {}
     for t in titles:
-        res = t.find("td", {"class":"align-middle text-white px-5 fw-bold dtr-hidden"})
+        res = t.find("td", {"class":"align-middle all text-white px-5 fw-bold"})
         descriptions[str(count)] = res.text
         count+=2
 
@@ -162,17 +194,6 @@ def get_subtitle_down(title, number, metadata, choose=False):
     logger.info(f"Getting subtitle for {buscar}")
     downElement = driver.find_element(By.CSS_SELECTOR,"#btnDescargar")
     downElement.click()
-    # TODO
-    # c&p from stackoverflow to get the file name of the downloaded file
-    '''
-    filename = driver.execute_script("""
-                var file_name = document.querySelector('downloads-manager')
-                    .shadowRoot.getElementById('frb0')
-                    .shadowRoot.getElementById('file-link').textContent;
-                return file_name;
-                """)
-    print(filename)
-    '''
     # wait for download 4 seconds should be enough, but sometimes website is slow, 10 is safer
     # if you get a filedown[0] error empty or missing, website is slower than the seconds you set
     # I just updated the script to wait until file is downloaded
@@ -190,6 +211,7 @@ def get_subtitle(downfile, path):
     temp_file = NamedTemporaryFile()
     logger.info(f"opening {downfile}")
     with open(os.path.join(download_path,downfile), mode='rb') as f:
+        print(os.path.join(download_path,downfile))
         contentfile = f.read()
         #delete file
         os.remove(os.path.join(download_path,downfile))
@@ -201,7 +223,7 @@ def get_subtitle(downfile, path):
         zip_file = ZipFile(temp_file)
         for name in zip_file.infolist():
             # don't unzip stub __MACOSX folders
-            if '.srt' in name.filename and '__MACOSX' not in name.filename:
+            if '__MACOSX' not in name.filename:
                 logger.info(' '.join(['\033[32m[*]\033[0mUnpacking zipped subtitle', name.filename, 'to', os.path.dirname(path)]))
                 zip_file.extract(name, os.path.dirname(path))
 
@@ -353,7 +375,15 @@ def main():
         logger.addHandler(console)
 
     cursor = FileFinder(args.path, with_extension=_extensions)
+    if not (args.browser):
+        op.add_argument("--headless=new")
+    global driver
+    # init selenium
+    driver = webdriver.Chrome(service=service, options=op)
 
+    driver.implicitly_wait(3)
+    driver.set_window_size(1920,1080)
+     
     for filepath in cursor.findFiles():
         # skip if a subtitle for this file exists
         sub_file = os.path.splitext(filepath)[0] + '.srt'
@@ -364,15 +394,6 @@ def main():
                 continue
 
         filename = os.path.basename(filepath)
-        # Second init selenium
-        if not (args.browser):
-            op.add_argument("--headless=new")
-        global driver
-        driver = webdriver.Chrome(service=service, options=op)
-
-        driver.implicitly_wait(3)
-        driver.set_window_size(1280,1024)
-
         try:
             info = guessit(filename)
             if 'season' in info:
@@ -387,6 +408,7 @@ def main():
                 title=args.title
             else:
                 title = info["title"]
+
             downfile = get_subtitle_down(
                 title, number,
                 metadata,
@@ -397,6 +419,7 @@ def main():
         if(downfile !=''):
             with subtitle_renamer(filepath):
                 get_subtitle(downfile, 'temp__' + filename )
-
+    # clean tmp dir
+    os.rmdir(download_path)
 if __name__ == '__main__':
     main()
